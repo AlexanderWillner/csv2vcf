@@ -13,6 +13,22 @@ import sys
 import csv
 import json
 
+def print_card(target, values):
+    target.write('BEGIN:VCARD' + "\n")
+    target.write('VERSION:3.0' + "\n")
+    target.write('N:' + values["name"] + ';' + "\n")
+    target.write('FN:' + values["full"] + "\n")
+    target.write('NICKNAME:' + values["nick"] + "\n")
+    target.write('TEL;HOME;VOICE:' + values["tel"] + "\n")
+    target.write('EMAIL:' + values["mail"] + "\n")
+    target.write('BDAY:' + values["bday"] + "\n")
+    target.write('ORG:' + values["org"] + "\n")
+    target.write('ROLE:' + values["role"] + "\n")
+    target.write('URL:' + values["url"] + "\n")
+    target.write('NOTE:' + values["note"] + "\n")
+    target.write('END:VCARD' + "\n")
+    target.write("\n")
+
 
 def convert_to_vcard(input_file, single_output, input_file_format):
 
@@ -38,49 +54,27 @@ def convert_to_vcard(input_file, single_output, input_file_format):
         for row in reader:
             N_VAL = row[SURNAME] if SURNAME is not None else ''
             N_VAL = N_VAL + ";" + row[GIVEN] if GIVEN is not None else ''
-            FN_VAL = row[FN] if FN is not None else row[GIVEN] + " " + row[SURNAME]
-            NICKNAME_VAL = row[NICKNAME] if NICKNAME is not None else ''
-            ORG_VAL = row[ORG] if ORG is not None else ''
-            TEL_VAL = row[TEL] if TEL is not None else ''
-            URL_VAL = row[URL] if URL is not None else ''
-            BDAY_VAL = row[BDAY] if BDAY is not None else ''
-            ROLE_VAL = row[ROLE] if ROLE is not None else ''
-            EMAIL_VAL = row[EMAIL] if EMAIL is not None else ''
-            NOTE_VAL = row[NOTE] if NOTE is not None else ''
+            values = {
+                "name": N_VAL,
+                "full": row[FN] if FN is not None else row[GIVEN] + " " + row[SURNAME],
+                "nick": row[NICKNAME] if NICKNAME is not None else '',
+                "org": row[ORG] if ORG is not None else '',
+                "tel": row[TEL] if TEL is not None else '',
+                "url": row[URL] if URL is not None else '',
+                "bday": row[BDAY] if BDAY is not None else '',
+                "role": row[ROLE] if ROLE is not None else '',
+                "mail": row[EMAIL] if EMAIL is not None else '',
+                "note": row[NOTE] if NOTE is not None else ''
+            }
 
-            print 'BEGIN:VCARD'
-            print 'VERSION:3.0'
-            print 'N:' + N_VAL
-            print 'FN:' + FN_VAL
-            print 'NICKNAME:' + NICKNAME_VAL
-            print 'TEL;HOME;VOICE:' + TEL_VAL
-            print 'EMAIL:' + EMAIL_VAL
-            print 'BDAY:' + BDAY_VAL
-            print 'ORG:' + ORG_VAL
-            print 'ROLE:' + ROLE_VAL
-            print 'URL:' + URL_VAL
-            print 'NOTE:' + NOTE_VAL
-            print 'END:VCARD'
+            # for the user
+            print_card(sys.stdout, values)
             print '----------------------'
 
             if not single_output:  # default ( multi-file output )
-                vcf = open('csv2vcf/' + FN_VAL + '_' + TEL_VAL + ".vcf", 'w')
+                vcf = open('csv2vcf/' + values["full"] + '_' + values["mail"] + ".vcf", 'w')
 
-            # write the file
-            vcf.write('BEGIN:VCARD' + "\n")
-            vcf.write('VERSION:3.0' + "\n")
-            vcf.write('N:' + N_VAL + ';' + "\n")
-            vcf.write('FN:' + FN_VAL + "\n")
-            vcf.write('NICKNAME:' + NICKNAME_VAL + "\n")
-            vcf.write('TEL;HOME;VOICE:' + TEL_VAL + "\n")
-            vcf.write('EMAIL:' + EMAIL_VAL + "\n")
-            vcf.write('BDAY:' + BDAY_VAL + "\n")
-            vcf.write('ORG:' + ORG_VAL + "\n")
-            vcf.write('ROLE:' + ROLE_VAL + "\n")
-            vcf.write('URL:' + URL_VAL + "\n")
-            vcf.write('NOTE:' + NOTE_VAL + "\n")
-            vcf.write('END:VCARD' + "\n")
-            vcf.write("\n")
+            print_card(vcf, values)
 
             if not single_output:  # default ( multi-file output )
                 vcf.close()
