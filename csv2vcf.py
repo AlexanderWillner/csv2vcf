@@ -26,6 +26,7 @@ def convert_to_vcard(input_file, single_output, input_file_format):
     BDAY = input_file_format['bday']-1 if 'bday' in input_file_format else None
     ROLE = input_file_format['role']-1 if 'role' in input_file_format else None
     EMAIL = input_file_format['email']-1 if 'email' in input_file_format else None
+    NOTE = input_file_format['note']-1 if 'note' in input_file_format else None
 
     i = 0
 
@@ -45,6 +46,7 @@ def convert_to_vcard(input_file, single_output, input_file_format):
             BDAY_VAL = row[BDAY] if BDAY is not None else ''
             ROLE_VAL = row[ROLE] if ROLE is not None else ''
             EMAIL_VAL = row[EMAIL] if EMAIL is not None else ''
+            NOTE_VAL = row[NOTE] if NOTE is not None else ''
 
             print 'BEGIN:VCARD'
             print 'VERSION:3.0'
@@ -57,6 +59,7 @@ def convert_to_vcard(input_file, single_output, input_file_format):
             print 'ORG:' + ORG_VAL
             print 'ROLE:' + ROLE_VAL
             print 'URL:' + URL_VAL
+            print 'NOTE:' + NOTE_VAL
             print 'END:VCARD'
             print '----------------------'
 
@@ -75,6 +78,7 @@ def convert_to_vcard(input_file, single_output, input_file_format):
             vcf.write('ORG:' + ORG_VAL + "\n")
             vcf.write('ROLE:' + ROLE_VAL + "\n")
             vcf.write('URL:' + URL_VAL + "\n")
+            vcf.write('NOTE:' + NOTE_VAL + "\n")
             vcf.write('END:VCARD' + "\n")
             vcf.write("\n")
 

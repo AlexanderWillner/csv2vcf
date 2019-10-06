@@ -21,7 +21,7 @@ Where :
 
 The JSON string can have the following keys :
 
-`name`, `given`, `surname`, `nickname`, `org`, `tel`, `url`, `bday`, `role`, and `email`, where each property is in accordance with [vCard property types](https://en.wikipedia.org/wiki/VCard)
+`name`, `given`, `surname`, `nickname`, `org`, `tel`, `url`, `bday`, `role`, `note` and `email`, where each property is in accordance with [vCard property types](https://en.wikipedia.org/wiki/VCard)
 
 Format is `{KEY_1:KEY_1_COLUMN_NO, KEY_2:KEY_2_COLUMN_NO, ...}`
 
