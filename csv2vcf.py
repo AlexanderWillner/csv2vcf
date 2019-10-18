@@ -35,6 +35,7 @@ def convert_to_vcard(input_file, single_output, input_file_format):
     FN = input_file_format['name']-1 if 'name' in input_file_format else None
     GIVEN = input_file_format['given']-1 if 'given' in input_file_format else None
     SURNAME = input_file_format['surname']-1 if 'surname' in input_file_format else None
+    PREFIX = input_file_format['prefix']-1 if 'prefix' in input_file_format else None
     NICKNAME = input_file_format['nickname']-1 if 'nickname' in input_file_format else None
     ORG = input_file_format['org']-1 if 'org' in input_file_format else None
     TEL = input_file_format['tel']-1 if 'tel' in input_file_format else None
@@ -47,13 +48,14 @@ def convert_to_vcard(input_file, single_output, input_file_format):
     i = 0
 
     with open(input_file, 'r') as source_file:
-        reader = csv.reader(source_file)
+        reader = csv.reader(source_file, delimiter=';')
         if single_output:  # if single output option is selected
             vcf = open('csv2vcf/all_contacts.vcf', 'w')
-
+        
         for row in reader:
             N_VAL = row[SURNAME] if SURNAME is not None else ''
             N_VAL = N_VAL + ";" + row[GIVEN] if GIVEN is not None else ''
+            N_VAL = N_VAL + ";;" + row[PREFIX] if PREFIX is not None else ''
             values = {
                 "name": N_VAL,
                 "full": row[FN] if FN is not None else row[GIVEN] + " " + row[SURNAME],
