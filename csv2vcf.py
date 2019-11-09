@@ -19,26 +19,38 @@ def print_card(target, values):
     target.write('N:' + values["name"] + ';' + "\n")
     target.write('FN:' + values["full"] + "\n")
     target.write('NICKNAME:' + values["nick"] + "\n")
-    target.write('TEL;HOME;VOICE:' + values["tel"] + "\n")
+    target.write('X-MAIDENNAME:' + values["maiden"] + "\n")
+    target.write('ADR;type=HOME;type=pref:;;' + values["street"] + ';' + values["city"] + ';;' + values["zip"] + ';' + values["country"] + "\n")
+    target.write('TEL;HOME;VOICE:' + values["tel"].replace("'", '') + "\n")
+    target.write('TEL;type=CELL;type=VOICE;type=pref:' + values["mobile"].replace("'", '') + "\n")
     target.write('EMAIL:' + values["mail"] + "\n")
     target.write('BDAY:' + values["bday"] + "\n")
     target.write('ORG:' + values["org"] + "\n")
     target.write('ROLE:' + values["role"] + "\n")
     target.write('URL:' + values["url"] + "\n")
-    target.write('NOTE:' + values["note"] + "\n")
+    target.write('NOTE: ' + values["note"] + "\n")
     target.write('END:VCARD' + "\n")
     target.write("\n")
 
 
-def convert_to_vcard(input_file, single_output, input_file_format):
+def convert_to_vcard(input_file, single_output, input_file_format, target):
+
+    if not os.path.exists('csv2vcf'):
+        os.makedirs('csv2vcf')
 
     FN = input_file_format['name']-1 if 'name' in input_file_format else None
     GIVEN = input_file_format['given']-1 if 'given' in input_file_format else None
     SURNAME = input_file_format['surname']-1 if 'surname' in input_file_format else None
     PREFIX = input_file_format['prefix']-1 if 'prefix' in input_file_format else None
     NICKNAME = input_file_format['nickname']-1 if 'nickname' in input_file_format else None
+    MAIDEN = input_file_format['maiden']-1 if 'maiden' in input_file_format else None
+    CITY = input_file_format['city']-1 if 'city' in input_file_format else None
+    STREET = input_file_format['street']-1 if 'street' in input_file_format else None
+    COUNTRY = input_file_format['country']-1 if 'country' in input_file_format else None
+    ZIP = input_file_format['zip']-1 if 'zip' in input_file_format else None
     ORG = input_file_format['org']-1 if 'org' in input_file_format else None
     TEL = input_file_format['tel']-1 if 'tel' in input_file_format else None
+    MOBILE = input_file_format['mobile']-1 if 'mobile' in input_file_format else None
     URL = input_file_format['url']-1 if 'url' in input_file_format else None
     BDAY = input_file_format['bday']-1 if 'bday' in input_file_format else None
     ROLE = input_file_format['role']-1 if 'role' in input_file_format else None
@@ -48,7 +60,9 @@ def convert_to_vcard(input_file, single_output, input_file_format):
     i = 0
 
     with open(input_file, 'r') as source_file:
-        reader = csv.reader(source_file, delimiter=';')
+        dialect = csv.Sniffer().sniff(source_file.read(1024))
+        source_file.seek(0)
+        reader = csv.reader(source_file, dialect)
         if single_output:  # if single output option is selected
             vcf = open('csv2vcf/all_contacts.vcf', 'w')
         
@@ -60,8 +74,14 @@ def convert_to_vcard(input_file, single_output, input_file_format):
                 "name": N_VAL,
                 "full": row[FN] if FN is not None else row[GIVEN] + " " + row[SURNAME],
                 "nick": row[NICKNAME] if NICKNAME is not None else '',
+                "maiden": row[MAIDEN] if MAIDEN is not None else '',
+                "zip": row[ZIP] if ZIP is not None else '',
+                "city": row[CITY] if CITY is not None else '',
+                "street": row[STREET] if STREET is not None else '',
+                "country": row[COUNTRY] if COUNTRY is not None else '',
                 "org": row[ORG] if ORG is not None else '',
                 "tel": row[TEL] if TEL is not None else '',
+                "mobile": row[MOBILE] if MOBILE is not None else '',
                 "url": row[URL] if URL is not None else '',
                 "bday": row[BDAY] if BDAY is not None else '',
                 "role": row[ROLE] if ROLE is not None else '',
@@ -70,8 +90,8 @@ def convert_to_vcard(input_file, single_output, input_file_format):
             }
 
             # for the user
-            print_card(sys.stdout, values)
-            print '----------------------'
+            print_card(target, values)
+            print ('----------------------')
 
             if not single_output:  # default ( multi-file output )
                 vcf = open('csv2vcf/' + values["full"] + '_' + values["mail"] + ".vcf", 'w')
@@ -83,8 +103,8 @@ def convert_to_vcard(input_file, single_output, input_file_format):
             i += 1
 
     vcf.close()
-    print str(i) + " VCARDS written"
-    print '----------------------'
+    print (str(i) + " VCARDS written")
+    print ('----------------------')
 
 
 def main(args):
@@ -101,7 +121,7 @@ def main(args):
         try:
             input_file_format = json.loads(args[2])
         except Exception:
-            print '\033[91m'+"ERROR : json could not be parsed"+'\033[0m'
+            print ('\033[91m'+"ERROR : json could not be parsed"+'\033[0m')
             sys.exit()
 
         single_output = 0
@@ -111,23 +131,20 @@ def main(args):
         if args[2] == '-s' or args[2] == '--single':
             single_output = 1
         else:
-            print '\033[91m'+"ERROR : invalid argument `" + args[2] + "`"+'\033[0m'
+            print ('\033[91m'+"ERROR : invalid argument `" + args[2] + "`"+'\033[0m')
             sys.exit()
 
         try:
             input_file_format = json.loads(args[3])
         except Exception:
-            print '\033[91m'+"ERROR : json could not be parsed"+'\033[0m'
+            print ('\033[91m'+"ERROR : json could not be parsed"+'\033[0m')
             sys.exit()
 
     if not os.path.exists(input_file):
-        print '\033[91m'+"ERROR : file `" + input_file + "` not found"+'\033[0m'
+        print ('\033[91m'+"ERROR : file `" + input_file + "` not found"+'\033[0m')
         sys.exit()
 
-    if not os.path.exists('csv2vcf'):
-        os.makedirs('csv2vcf')
-
-    convert_to_vcard(input_file, single_output, input_file_format)
+    convert_to_vcard(input_file, single_output, input_file_format, sys.stdout)
 
 
 if __name__ == '__main__':
