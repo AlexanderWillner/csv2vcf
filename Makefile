@@ -17,9 +17,8 @@ run:
 	@python $(SRC_CORE)/csv2vcf.py
 
 test:
-	@echo "no test implemented, yet"
 	@type coverage >/dev/null 2>&1 || (echo "Run 'pip install coverage' first." >&2 ; exit 1)
-	@coverage run --source . -m tests.test_csv2vcf
+	@coverage run --source . -m test_csv2vcf
 	@coverage report
 
 doc:
