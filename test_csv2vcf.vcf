@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:3.0
+PRODID:-//Apple Inc.//Mac OS X 10.14.6//EN
+N:Last;First;;;
+FN:First Last
+X-MAIDENNAME:Maiden
+EMAIL;type=INTERNET;type=HOME;type=pref:mail@example.org
+TEL;type=CELL;type=VOICE;type=pref:+995551234567
+TEL;type=HOME;type=VOICE:+155512345
+ADR;type=HOME;type=pref:;;Street 1;City;;12345;Country
+NOTE:Note
+BDAY:2000-12-24
+UID:408c4d0c-cdc7-475d-b6db-b8d1d72bb07e
+X-ABUID:3CDE360A-FCBA-440C-85D6-B7E9048B838B:ABPerson
+END:VCARD
